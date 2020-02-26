@@ -46,12 +46,19 @@ class EmgRate(myo.DeviceListener):
     event.device.stream_emg(True)
 
   def on_emg(self, event):
-    t = time.clock()
+    t = self.get_cpu_clock()
+
     if self.last_time is not None:
       self.times.append(t - self.last_time)
       if len(self.times) > self.n:
         self.times.popleft()
     self.last_time = t
+
+  def get_cpu_clock(self):
+    if sys.version_info >= (3, 3):
+      return time.perf_counter()
+    # time.clock() is deprecated since Python 3.3 and removed in Python 3.8
+    return time.clock()
 
 
 def main():
